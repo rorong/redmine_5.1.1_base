@@ -10,7 +10,7 @@ body, #wrapper { background-color:#EEEEEE; }
 h2, h3, h4, .wiki h1, .wiki h2, .wiki h3 {border-bottom: 0px;}
 
 /* Menu */
-#main-menu li a { background-color: #507AAA; font-weight: bold;}
+/*#main-menu li a { background-color: #507AAA; font-weight: bold;}
 #main-menu li a:hover { background: #507AAA; text-decoration: underline; }
 #main-menu li a.selected, #main-menu li a.selected:hover { background-color:#EEEEEE; }
 #main-menu li a.new-object { background-color:#507AAA; text-decoration: none; }
@@ -20,7 +20,20 @@ h2, h3, h4, .wiki h1, .wiki h2, .wiki h3 {border-bottom: 0px;}
   border-bottom: 1px solid #507AAA;
   border-left: 1px solid #507AAA;
 }
-#main-menu .menu-children li a:hover { background-color: #507AAA;}
+#main-menu .menu-children li a:hover { background-color: #507AAA;}*/
+
+#main-menu li a { background-color: #3E5B76; font-weight: bold;}
+#main-menu li a:hover { background: #3E5B76; text-decoration: underline; }
+#main-menu li a.selected, #main-menu li a.selected:hover { background-color:#EEEEEE; }
+#main-menu li a.new-object { background-color:#3E5B76; text-decoration: none; }
+
+#main-menu .menu-children {
+  border-right: 1px solid #3E5B76;
+  border-bottom: 1px solid #3E5B76;
+  border-left: 1px solid #3E5B76;
+}
+#main-menu .menu-children li a:hover { background-color: #3E5B76;}
+
 
 
 /* Tables */
