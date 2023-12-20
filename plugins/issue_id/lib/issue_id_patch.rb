@@ -30,7 +30,6 @@ module IssueIdPatch
             alias_method :copy_from, :copy_from_with_issue_id
 
             alias_method :send_notification_without_delay, :send_notification
-            alias_method :send_notification, :send_notification_with_delay
         end
     end
 
@@ -134,12 +133,8 @@ module IssueIdPatch
             result
         end
 
-        def send_notification_with_delay
-            @delayed_notification = true
-        end
-
         def send_notification_with_full_id
-            send_notification_without_delay if @delayed_notification
+            send_notification_without_delay
         end
 
         def support_issue_id?
