@@ -97,7 +97,7 @@ class Mailer < ActionMailer::Base
   def self.deliver_issue_add(issue)
     users = issue.notified_users | issue.notified_watchers | issue.notified_mentions
     users.each do |user|
-      issue_add(user, issue).deliver_later
+      issue_add(user, issue).deliver_now
     end
   end
 
