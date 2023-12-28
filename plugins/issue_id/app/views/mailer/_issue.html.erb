@@ -1,6 +1,6 @@
 <h1><%= link_to("#{issue.tracker.name} ##{issue.to_param}: #{issue.subject}", issue_url) %></h1>
 
-<%= render_email_issue_attributes(issue, users.first, true) %>
+<%= render_email_issue_attributes(issue, users&.first, true) %>
 
 <%= textilizable(issue, :description, :only_path => false) %>
 
