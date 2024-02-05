@@ -1,0 +1,6 @@
+<% if @message.present? %>
+	<p><%= @message%></p>
+<% else %>
+	<p>Dear <%=@user.name%></p>
+	<p>Please find enclosed attachmnet.</p>
+<% end %>

@@ -46,7 +46,6 @@ class IssuesController < ApplicationController
     use_session = !request.format.csv?
     retrieve_default_query(use_session)
     retrieve_query(IssueQuery, use_session)
-
     if @query.valid?
       respond_to do |format|
         format.html do
@@ -78,7 +77,26 @@ class IssuesController < ApplicationController
         end
         format.pdf do
           @issues = @query.issues(:limit => Setting.issues_export_limit.to_i)
-          send_file_headers! :type => 'application/pdf', :filename => "#{filename_for_export(@query, 'issues')}.pdf"
+          if params[:email_with_attachment]
+            attachment = {}
+            if params[:attachment_type] == 'csv'
+              attachment[:filename] = "#{filename_for_export(@query, 'issues')}.csv"
+              attachment[:content] = query_to_csv(@issues, @query, params[:csv])
+            else
+              attachment[:filename] = "#{filename_for_export(@query, 'issues')}.pdf"
+              attachment[:content] = render_to_string pdf: attachment[:filename], template: 'issues/index.pdf.erb'
+            end
+            user_ids = params[:users] || [User.current.id]
+            user_ids.each do |id|
+              user = User.find(id)
+              Mailer.send_email_with_attachment(user, 'All Issue Attachment', attachment, params[:message])
+            end
+
+            flash[:notice] = 'Email sent with attachment successfully!'
+            redirect_to request.referrer
+          else
+            send_file_headers! :type => 'application/pdf', :filename => "#{filename_for_export(@query, 'issues')}.pdf"
+          end
         end
       end
     else
