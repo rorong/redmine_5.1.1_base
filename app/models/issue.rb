@@ -1599,22 +1599,17 @@ class Issue < ActiveRecord::Base
   def self.count_and_group_by(options)
     assoc = reflect_on_association(options[:association])
     select_field = assoc.foreign_key
-
-    Issue.
-      visible(User.current, :project => options[:project], :with_subprojects => options[:with_subprojects]).
-      joins(:status).
-      group(:status_id, :is_closed, select_field).
-      count.
-      map do |columns, total|
-        status_id, is_closed, field_value = columns
-        is_closed = ['t', 'true', '1'].include?(is_closed.to_s)
-        {
-          "status_id" => status_id.to_s,
-          "closed" => is_closed,
-          select_field => field_value.to_s,
-          "total" => total.to_s
+    Issue.visible(User.current, :project => options[:project], :with_subprojects => options[:with_subprojects]).includes(:status).group_by {|x| [x.status_id, x.status.is_closed, x.send(select_field)]}.map do |key, values| 
+        { "status_id" => key[0].to_s,
+          "closed" => key[1],
+          select_field => key[2].to_s,
+          "total" => values.count,
+          "1-week" => values.select{|x| (7.days.ago.to_date..0.days.ago.to_date).include?(x.updated_on.to_date)}.size,
+          "2-week" =>values.select{|x| (14.days.ago.to_date..8.days.ago.to_date).include?(x.updated_on.to_date)}.size,
+          "3-week" => values.select{|x| (21.days.ago.to_date..15.days.ago.to_date).include?(x.updated_on.to_date)}.size,
+          "4-plus-week" => values.select{|x|  x.updated_on.to_date < 21.days.ago.to_date}.size
         }
-      end
+    end
   end
 
   # Returns a scope of projects that user can assign the subtask

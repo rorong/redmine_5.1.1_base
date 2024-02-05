@@ -24,21 +24,30 @@ class ReportsController < ApplicationController
   include ReportsHelper
   def issue_report
     with_subprojects = Setting.display_subprojects_issues?
-    @trackers = @project.rolled_up_trackers(with_subprojects).visible
-    @versions = @project.shared_versions.sorted + [Version.new(:name => "[#{l(:label_none)}]")]
-    @priorities = IssuePriority.all.reverse
-    @categories = @project.issue_categories + [IssueCategory.new(:name => "[#{l(:label_none)}]")]
-    @assignees = (Setting.issue_group_assignment? ? @project.principals : @project.users).sorted + [User.new(:firstname => "[#{l(:label_none)}]")]
-    @authors = @project.users.sorted
-    @subprojects = @project.descendants.visible
-    @issues_by_tracker = Issue.by_tracker(@project, with_subprojects)
-    @issues_by_version = Issue.by_version(@project, with_subprojects)
-    @issues_by_priority = Issue.by_priority(@project, with_subprojects)
-    @issues_by_category = Issue.by_category(@project, with_subprojects)
-    @issues_by_assigned_to = Issue.by_assigned_to(@project, with_subprojects)
-    @issues_by_author = Issue.by_author(@project, with_subprojects)
-    @issues_by_subproject = Issue.by_subproject(@project) || []
-
+    @issue_by = params[:tab]
+    case @issue_by
+    when "version"
+      @versions = @project.shared_versions.sorted + [Version.new(:name => "[#{l(:label_none)}]")]
+      @issues_by_version = Issue.by_version(@project, with_subprojects)
+    when "priority"
+      @priorities = IssuePriority.all.reverse
+      @issues_by_priority = Issue.by_priority(@project, with_subprojects)
+    when "category"
+      @categories = @project.issue_categories + [IssueCategory.new(:name => "[#{l(:label_none)}]")]
+      @issues_by_category = Issue.by_category(@project, with_subprojects)
+    when "assigned_to"
+      @assignees = (Setting.issue_group_assignment? ? @project.principals : @project.users).sorted + [User.new(:firstname => "[#{l(:label_none)}]")]
+      @issues_by_assigned_to = Issue.by_assigned_to(@project, with_subprojects)
+    when "author"
+      @authors = @project.users.sorted
+      @issues_by_author = Issue.by_author(@project, with_subprojects)
+    when "subproject"
+      @subprojects = @project.descendants.visible
+      @issues_by_subproject = Issue.by_subproject(@project) || []
+    else "tracker"
+      @trackers = @project.rolled_up_trackers(with_subprojects).visible
+      @issues_by_tracker = Issue.by_tracker(@project, with_subprojects)
+    end
     render :template => "reports/issue_report"
   end
 
