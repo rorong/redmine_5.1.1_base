@@ -23,14 +23,26 @@ module ReportsHelper
     a = 0
     data.each do |row|
       match = 1
-      criteria.each do |k, v|
-        unless (row[k].to_s == v.to_s) ||
-                 (k == 'closed' &&
-                   (v == 0 ? ['f', false] : ['t', true]).include?(row[k]))
+      criteria.reject{|k, v| k == criteria.keys.last}.each do |k, v|
+        unless (row[k].to_s == v.to_s) || (k == 'closed' && (v == 0 ? ['f', false] : ['t', true]).include?(row[k]))
           match = 0
         end
       end unless criteria.nil?
-      a = a + row["total"].to_i if match == 1
+
+      if match == 1
+        if criteria["1-week"]
+          a = a + row["1-week"].to_i
+        elsif criteria["2-week"]
+          a = a + row["2-week"].to_i
+        elsif criteria["3-week"]
+          a = a + row["3-week"].to_i
+        elsif criteria["4-plus-week"]
+          a = a + row["4-plus-week"].to_i
+        else
+          a = a + row["total"].to_i
+        end
+      end
+
     end unless data.nil?
     a
   end
@@ -61,5 +73,19 @@ module ReportsHelper
           [aggregate(data, { field_name => row.id })]
       end
     end
+  end
+
+  def issue_report_tabs
+    tabs =
+      [
+        {:name => 'tracker', :onclick => 'report/issue_report', :label => "label_tracker"},
+        {:name => 'version', :onclick => 'report/issue_report', :label => "label_version"},
+        {:name => 'priority', :onclick => 'report/issue_report',
+         :label => "label_priority"},
+        {:name => 'category', :onclick => 'report/issue_report', :label => "label_category"},
+        {:name => 'assigned_to', :onclick => 'report/issue_report', :label => "label_assigned_to"},
+        {:name => 'author', :onclick => 'report/issue_report', :label => "label_author"},
+        {:name => 'subproject', :onclick => 'report/issue_report', :label => "label_subproject"}
+      ]
   end
 end

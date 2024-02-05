@@ -750,6 +750,18 @@ class Mailer < ActionMailer::Base
     mails
   end
 
+  def self.send_email_with_attachment(user, subject, attachment, message)
+    send_attached_mail(user, subject, attachment, message).deliver_now
+  end
+
+  def send_attached_mail(user, subject, attachment, message)
+    attachments[attachment[:filename]] = attachment[:content]
+    @user = user
+    @message = message
+    mail(to: user, subject: subject) do |format|
+      format.html
+    end
+  end
   private
 
   # Appends a Redmine header field (name is prepended with 'X-Redmine-')
