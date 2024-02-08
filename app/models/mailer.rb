@@ -756,6 +756,7 @@ class Mailer < ActionMailer::Base
 
   def send_attached_mail(user, subject, attachment, message)
     attachments[attachment[:filename]] = attachment[:content]
+    @sender = User.current
     @user = user
     @message = message
     mail(to: user, subject: subject) do |format|

@@ -89,7 +89,8 @@ class IssuesController < ApplicationController
             user_ids = params[:users] || [User.current.id]
             user_ids.each do |id|
               user = User.find(id)
-              Mailer.send_email_with_attachment(user, 'All Issue Attachment', attachment, params[:message])
+              subject = params[:subject].present? ? params[:subject] : 'All Issue Attachment'
+              Mailer.send_email_with_attachment(user, subject, attachment, params[:message])
             end
 
             flash[:notice] = 'Email sent with attachment successfully!'

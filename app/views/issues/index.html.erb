@@ -83,6 +83,10 @@
       <%= select_tag 'users[]', options_from_collection_for_select(User.order(:firstname), 'id', 'name', User.current.id), multiple: true, size: 10, class: 'select2', style: 'width: 309px;' %>
     </p>
     <p>
+      <label for="subject">Subject:</label>
+      <%= text_field_tag 'subject', '', style: 'width: 262px;' %>
+    </p>
+    <p>
       <label for="message">Message:</label><br>
       <%= text_area_tag 'message', '', rows: 4, cols: 40 %>
     </p>

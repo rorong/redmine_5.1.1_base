@@ -23,7 +23,8 @@ module ReportsHelper
     a = 0
     data.each do |row|
       match = 1
-      criteria.reject{|k, v| k == criteria.keys.last}.each do |k, v|
+      reject_criteria = ["1-week", "2-week", "3-week", "4-plus-week"]
+      criteria.reject { |key, _| reject_criteria.include?(key) }.each do |k, v|
         unless (row[k].to_s == v.to_s) || (k == 'closed' && (v == 0 ? ['f', false] : ['t', true]).include?(row[k]))
           match = 0
         end
