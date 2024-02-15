@@ -25,31 +25,80 @@ class ReportsController < ApplicationController
   def issue_report
     with_subprojects = Setting.display_subprojects_issues?
     @issue_by = params[:tab]
-    case @issue_by
-    when "version"
-      @versions = @project.shared_versions.sorted + [Version.new(:name => "[#{l(:label_none)}]")]
-      @issues_by_version = Issue.by_version(@project, with_subprojects)
-    when "priority"
-      @priorities = IssuePriority.all.reverse
-      @issues_by_priority = Issue.by_priority(@project, with_subprojects)
-    when "category"
-      @categories = @project.issue_categories + [IssueCategory.new(:name => "[#{l(:label_none)}]")]
-      @issues_by_category = Issue.by_category(@project, with_subprojects)
-    when "assigned_to"
-      @assignees = (Setting.issue_group_assignment? ? @project.principals : @project.users).sorted + [User.new(:firstname => "[#{l(:label_none)}]")]
-      @issues_by_assigned_to = Issue.by_assigned_to(@project, with_subprojects)
-    when "author"
-      @authors = @project.users.sorted
-      @issues_by_author = Issue.by_author(@project, with_subprojects)
-    when "subproject"
-      @subprojects = @project.descendants.visible
-      @issues_by_subproject = Issue.by_subproject(@project) || []
-    else "tracker"
-      @trackers = @project.rolled_up_trackers(with_subprojects).visible
-      @issues_by_tracker = Issue.by_tracker(@project, with_subprojects)
+    @result = get_report_detail(@issue_by, with_subprojects)
+
+    respond_to do |format|
+      format.html do
+        render :template => "reports/issue_report"
+      end
+      format.csv do
+        send_data(issue_report_to_csv(@result[:field_name], @result[:rows], @result[:data]),
+          :type => 'text/csv; header=present',
+          :filename => "report-#{@result[:detail]}.csv")
+      end
+      format.pdf do
+        if params[:email_with_attachment]
+          attachment = {}
+          if params[:attachment_type] == 'csv'
+            attachment[:filename] = "report-#{@result[:detail]}.csv"
+            attachment[:content] = issue_report_to_csv(@result[:field_name], @result[:rows], @result[:data])
+          else
+            attachment[:filename] = "report-#{@result[:detail]}.pdf"
+            attachment[:content] = render_to_string pdf: attachment[:filename], template: "reports/issue_report"
+          end
+          user_ids = params[:users] || [User.current.id]
+          user_ids.each do |id|
+            user = User.find(id)
+            subject = params[:subject].present? ? params[:subject] : 'All Issue Attachment'
+            Mailer.send_email_with_attachment(user, subject, attachment, params[:message])
+          end
+
+          flash[:notice] = 'Email sent with attachment successfully!'
+          redirect_to request.referrer
+        else
+          render pdf: "report-#{@result[:detail]}", template: "reports/issue_report",disposition: 'attachment'
+        end
+      end
     end
-    render :template => "reports/issue_report"
   end
+
+  def get_report_detail(issue_by, with_subprojects)
+  result_hash = {}
+
+  case issue_by
+  when "version"
+    result_hash[:rows] = @project.shared_versions.sorted + [Version.new(name: "[#{l(:label_none)}]")]
+    result_hash[:data] = Issue.by_version(@project, with_subprojects)
+    result_hash[:field_name] = "fixed_version_id"
+  when "priority"
+    result_hash[:rows] = IssuePriority.all.reverse
+    result_hash[:data] = Issue.by_priority(@project, with_subprojects)
+    result_hash[:field_name] = "priority_id"
+  when "category"
+    result_hash[:rows] = @project.issue_categories + [IssueCategory.new(name: "[#{l(:label_none)}]")]
+    result_hash[:data] = Issue.by_category(@project, with_subprojects)
+    result_hash[:field_name] = "category_id"
+  when "assigned_to"
+    result_hash[:rows] = (Setting.issue_group_assignment? ? @project.principals : @project.users).sorted + [User.new(firstname: "[#{l(:label_none)}]")]
+    result_hash[:data] = Issue.by_assigned_to(@project, with_subprojects)
+    result_hash[:field_name] = "assigned_to_id"
+  when "author"
+    result_hash[:rows] = @project.users.sorted
+    result_hash[:data] = Issue.by_author(@project, with_subprojects)
+    result_hash[:field_name] = "author_id"
+  when "subproject"
+    result_hash[:rows] = @project.descendants.visible
+    result_hash[:data] = Issue.by_subproject(@project) || []
+    result_hash[:field_name] = "project_id"
+  else "tracker"
+    result_hash[:rows] = @project.rolled_up_trackers(with_subprojects).visible
+    result_hash[:data] = Issue.by_tracker(@project, with_subprojects)
+    result_hash[:field_name] = "tracker_id"
+  end
+  result_hash[:detail] = issue_by || "tracker"
+
+  result_hash
+end
 
   def issue_report_details
     with_subprojects = Setting.display_subprojects_issues?

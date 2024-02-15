@@ -84,7 +84,7 @@
     </p>
     <p>
       <label for="subject">Subject:</label>
-      <%= text_field_tag 'subject', '', style: 'width: 262px;' %>
+      <%= text_field_tag 'subject', "#{User.current.name} share you list", style: 'width: 262px;' %>
     </p>
     <p>
       <label for="message">Message:</label><br>

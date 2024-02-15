@@ -1140,7 +1140,7 @@ en:
   label_time_by_author: "%{time} by %{author}"
   label_priority: Priority
   label_category: Category
-  label_assigned_to: Assigned_to
+  label_assigned_to: Assignee
   label_author: Author
   label_subproject: Subproject
 

@@ -76,6 +76,25 @@ module ReportsHelper
     end
   end
 
+  def issue_report_to_csv(field_name, rows, data)
+    Redmine::Export::CSV.generate(:encoding => params[:encoding]) do |csv|
+      # csv headers
+      headers = [''] + ["0-7 days", "7-14 days", "14-28 days", ">28 days", l(:label_total)]
+      csv << headers
+
+      # csv lines
+      rows.each do |row|
+        csv <<
+          [row.name] +
+          [aggregate(data, { field_name => row.id, "closed" => 0, "1-week" => true })] +
+          [aggregate(data, { field_name => row.id, "closed" => 0, "2-week" => true })] +
+          [aggregate(data, { field_name => row.id, "closed" => 0, "3-week" => true })] +
+          [aggregate(data, { field_name => row.id, "closed" => 0, "4-plus-week" => true })] +
+          [aggregate(data, { field_name => row.id })]
+      end
+    end
+  end
+
   def issue_report_tabs
     tabs =
       [
@@ -85,8 +104,9 @@ module ReportsHelper
          :label => "label_priority"},
         {:name => 'category', :onclick => 'report/issue_report', :label => "label_category"},
         {:name => 'assigned_to', :onclick => 'report/issue_report', :label => "label_assigned_to"},
-        {:name => 'author', :onclick => 'report/issue_report', :label => "label_author"},
-        {:name => 'subproject', :onclick => 'report/issue_report', :label => "label_subproject"}
+        {:name => 'author', :onclick => 'report/issue_report', :label => "label_author"}
       ]
+    tabs << {:name => 'subproject', :onclick => 'report/issue_report', :label => "label_subproject"} if @project.children.any?
+    tabs
   end
 end

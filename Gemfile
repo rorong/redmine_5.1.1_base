@@ -17,6 +17,8 @@ gem 'addressable'
 gem 'rubyzip', '~> 2.3.0'
 gem 'pry'
 gem 'letter_opener'
+gem 'wicked_pdf'
+gem 'wkhtmltopdf-binary'
 
 #  Ruby Standard Gems
 gem 'csv', '~> 3.2.6'

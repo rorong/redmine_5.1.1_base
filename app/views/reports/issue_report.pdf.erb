@@ -1,0 +1,34 @@
+<h1>Report</h1>
+<h3>
+  <%=l("field_#{@result[:detail]}")%>&nbsp;
+  <%=l(:label_details)%>
+</h3>
+<%= render :partial => 'simple', :locals => { :data => @result[:data], :field_name => @result[:field_name], :rows => @result[:rows] } %>
+
+<style>
+table.list.issue-report {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+table.list.issue-report th,
+table.list.issue-report td {
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: left;
+}
+
+table.list.issue-report th {
+  background-color: #f2f2f2;
+}
+
+table.list.issue-report tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+table.list.issue-report tbody tr:hover {
+  background-color: #e0e0e0;
+}
+
+</style>

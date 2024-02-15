@@ -6,7 +6,7 @@
       <tr>
         <th></th>
         <th colspan="4"><%=l(:label_open_issues_plural)%></th>
-        <th><%=l(:label_closed_issues_plural)%></th>
+        <!-- <th><%#=l(:label_closed_issues_plural)%></th> -->
         <th><%=l(:label_total)%></th>
       </tr>
       <tr>
@@ -15,7 +15,7 @@
         <th><%="7-14 days"%></th>
         <th><%="14-28 days"%></th>
         <th><%=">28 days"%></th>
-        <th></th>
+        <!-- <th></th> -->
         <th></th>
       </tr>
     </thead>
@@ -27,7 +27,7 @@
           <td><%= aggregate_link data, { field_name => row.id, "closed" => 0, "2-week" => true }, aggregate_path(@project, field_name, row, :status_id => "o", :subproject_id => nil) %></td>
           <td><%= aggregate_link data, { field_name => row.id, "closed" => 0, "3-week" => true }, aggregate_path(@project, field_name, row, :status_id => "o", :subproject_id => nil) %></td>
           <td><%= aggregate_link data, { field_name => row.id, "closed" => 0, "4-plus-week" => true }, aggregate_path(@project, field_name, row, :status_id => "o", :subproject_id => nil) %></td>
-          <td><%= aggregate_link data, { field_name => row.id, "closed" => 1}, aggregate_path(@project, field_name, row, :status_id => "c", :subproject_id => nil) %></td>
+          <!-- <td><%#= aggregate_link data, { field_name => row.id, "closed" => 1}, aggregate_path(@project, field_name, row, :status_id => "c", :subproject_id => nil) %></td> -->
           <td><%= aggregate_link data, { field_name => row.id }, aggregate_path(@project, field_name, row, :status_id => "*", :subproject_id => nil) %></td>
         </tr>
       <% end %>

@@ -1599,7 +1599,7 @@ class Issue < ActiveRecord::Base
   def self.count_and_group_by(options)
     assoc = reflect_on_association(options[:association])
     select_field = assoc.foreign_key
-    Issue.visible(User.current, :project => options[:project], :with_subprojects => options[:with_subprojects]).includes(:status).group_by {|x| [x.status_id, x.status.is_closed, x.send(select_field)]}.map do |key, values| 
+    Issue.open.visible(User.current, :project => options[:project], :with_subprojects => options[:with_subprojects]).includes(:status).group_by {|x| [x.status_id, x.status.is_closed, x.send(select_field)]}.map do |key, values| 
         { "status_id" => key[0].to_s,
           "closed" => key[1],
           select_field => key[2].to_s,
