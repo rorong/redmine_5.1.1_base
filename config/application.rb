@@ -90,6 +90,7 @@ module RedmineApp
       :cookie_store,
       :key => '_redmine_session',
       :path => config.relative_url_root || '/',
+      :secure => Rails.env.production?,
       :same_site => :lax
     )
 
