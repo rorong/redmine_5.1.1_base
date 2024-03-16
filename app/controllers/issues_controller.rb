@@ -84,7 +84,7 @@ class IssuesController < ApplicationController
               attachment[:content] = query_to_csv(@issues, @query, params[:csv])
             else
               attachment[:filename] = "#{filename_for_export(@query, 'issues')}.pdf"
-              attachment[:content] = render_to_string pdf: attachment[:filename], template: 'issues/index.pdf.erb'
+              attachment[:content] = render_to_string(template: 'issues/index.pdf.erb')
             end
             user_ids = params[:users] || [User.current.id]
             user_ids.each do |id|
