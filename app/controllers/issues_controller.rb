@@ -47,6 +47,7 @@ class IssuesController < ApplicationController
     retrieve_default_query(use_session)
     retrieve_query(IssueQuery, use_session)
     if @query.valid?
+      open_ticket_add_filter if params["duration"].present? && params["status_id"] == "o"
       respond_to do |format|
         format.html do
           @issue_count = @query.issue_count
@@ -735,5 +736,18 @@ class IssuesController < ApplicationController
     else
       redirect_back_or_default issue_path(@issue)
     end
+  end
+
+  def open_ticket_add_filter
+    duration_ranges = {
+      "1-week" => { operator: "><t", values: ["0", "7"] },
+      "2-week" => { operator: "><t", values: ["8", "14"] },
+      "3-week" => { operator: "><t", values: ["15", "28"] }
+    }
+
+    default_range = { operator: "<t-", values: ["29"] }
+    filter = duration_ranges[params["duration"]] || default_range
+
+    @query.filters["updated_on"] = filter
   end
 end

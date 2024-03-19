@@ -1333,6 +1333,9 @@ class Query < ActiveRecord::Base
     when "><t-"
       # between today - n days and today
       sql = relative_date_clause(db_table, db_field, - value.first.to_i, 0, is_custom_filter)
+    when "><t"
+      # between - n1 to n2 to days
+      sql = relative_date_clause(db_table, db_field, - value.second.to_i, - value.first.to_i, is_custom_filter)
     when ">t-"
       # >= today - n days
       sql = relative_date_clause(db_table, db_field, - value.first.to_i, nil, is_custom_filter)
